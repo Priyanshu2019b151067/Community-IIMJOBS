@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import axios from 'axios';
+import Cookies from 'js-cookie'
 function Signup() {
  const [signupForm,setSignupForm] = useState({
     empCode : '',
@@ -19,14 +20,23 @@ function Signup() {
     e.preventDefault();
     if(signupForm.password !== signupForm.repeatPassword){
         setMessage('Password donot match.');
+        return;
     }
     setMessage('');
-    const data = {'empCode':signupForm.empCode,'email':signupForm.email,'password':signupForm.password}
-    const response = await axios.post('http://localhost:3000/user/signup',data);
-    console.log(response);
+    try {
+      const data = {'empCode':signupForm.empCode,'email':signupForm.email,'password':signupForm.password}
+      const response = await axios.post('http://localhost:3000/user/signup',data);
+      
+      //setting up jwt token in cookie
+      Cookies.set('jwtToken',response.data.token,{expires : 1})
+    } catch (error) {
+      console.log(error)
+    }
+   
   } 
   return (
     <div>
+      {message}
       <form onSubmit={handleSubmit}>
         <div>
           <input type='text' name='empCode' value={signupForm.empCode} onChange={handleChange} />

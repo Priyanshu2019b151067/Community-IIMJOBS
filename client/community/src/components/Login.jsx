@@ -1,10 +1,18 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import axios from 'axios'
+import {Link} from 'react-router-dom'
+import Cookies from 'js-cookie'
+import { userContext } from '../../context/UserContext';
+import { useNavigate } from 'react-router-dom';
+
 function Login() {
   const [loginForm,setLoginForm] = useState({
-     empcode : '',
+     empCode : '',
      password : ''
   });
+  const {setUser} = useContext(userContext);
+  const navigate = useNavigate();
+
   const [message,setMessage] = useState('');
   const handleChange = (e) =>{
     const {name,value} = e.target;
@@ -16,9 +24,9 @@ function Login() {
     ))
   }
 
-  const handleSubmit = (e)=>{
+  const handleSubmit = async (e)=>{
     e.preventDefault();
-    if(loginForm.empcode === ''){
+    if(loginForm.empCode === ''){
         setMessage('Please specify empcode. ');
     }else if(loginForm.password === ''){
         setMessage('Please specify password. ');
@@ -26,29 +34,39 @@ function Login() {
 
     // login api call
     try{
-        const response =  axios.post('',loginForm);
-        localStorage.setItem('token',response.data.token);
+        const data = {
+            "empCode" : loginForm.empCode,
+            "password" : loginForm.password
+        }
+        const response = await axios.post('http://localhost:3000/user/login',data,{ withCredentials: true });
+        if(response.status == 200){
+           setUser(loginForm.empCode);
+            navigate('profile');
+        }
+       //Cookies.set('jwt_token',response.data.token);
         setMessage('Login successful. ')
     }catch(err){
         setMessage('Login failed. ')
     }
-    clearFields();
+    //clearFields();
   }
   return (
     <div>
         <h1>Login</h1>
+
         <p>Enter your login details please.</p>
         <form className='max-w-sm mx-auto' onSubmit={handleSubmit}>
             <div>
                 {message}
             </div>
             <div>
-                 <input name='empcode' type='text' value={loginForm.empcode} onChange={handleChange} placeholder='empCode' />
+                 <input name='empCode' type='text' value={loginForm.empCode} onChange={handleChange} placeholder='empCode' />
             </div>
             <div>
                 <input name='password' type='password' value={loginForm.password} onChange={handleChange} placeholder='password' />
             </div>
             <button onClick={handleSubmit}>Login</button>
+            <Link to={'/signup'}>Create Account</Link>
         </form>
     </div>
   )
