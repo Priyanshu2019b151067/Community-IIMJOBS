@@ -1,6 +1,8 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import axios from 'axios';
-import Cookies from 'js-cookie'
+import { useNavigate } from 'react-router-dom';
+import { UserContext } from '../../context/UserContext';
+// import Cookies from 'js-cookie'
 function Signup() {
  const [signupForm,setSignupForm] = useState({
     empCode : '',
@@ -9,6 +11,8 @@ function Signup() {
     repeatPassword : ''
   });
   const [message,setMessage] = useState('');
+  const navigate = useNavigate();
+  const {user,setUser} = useContext(UserContext);
   const handleChange = (e)=>{
     const {name,value} = e.target;
     setSignupForm((prevValue)=>({
@@ -25,10 +29,14 @@ function Signup() {
     setMessage('');
     try {
       const data = {'empCode':signupForm.empCode,'email':signupForm.email,'password':signupForm.password}
-      const response = await axios.post('http://localhost:3000/user/signup',data);
+      const response = await axios.post('http://localhost:3000/user/signup',data,{withCredentials : true});
       
+      if(response.status === 200){
+        setUser(response.data.user.empCode)
+        navigate('/')
+      }
       //setting up jwt token in cookie
-      Cookies.set('jwtToken',response.data.token,{expires : 1})
+      //Cookies.set('jwtToken',response.data.token,{expires : 1})
     } catch (error) {
       console.log(error)
     }

@@ -18,7 +18,13 @@ const signup = async (req,res)=>{
         //generate jwt
         const payload = {id : newUser._id,email : newUser.email,empCode : newUser.empCode};
         const token = jwt.sign(payload,process.env.JWT_SECRET,{expiresIn:'1h'});
-        res.status(201).json({user:newUser,token});
+        res.cookie('jwt', token, {
+            httpOnly: true,
+            secure: false, // Set to true in i production
+            sameSite: 'None',
+            maxAge: 3600000 // 1 hour
+          });
+        res.status(200).json({user:newUser});
     }catch(error){
         res.status(400).json({error:error.message})
     }
@@ -46,7 +52,7 @@ const login = async (req,res)=>{
         res.cookie('jwt', token, {
             httpOnly: true,
             secure: false, // Set to true in production
-            sameSite: 'Strict',
+            sameSite: 'None',
             maxAge: 3600000 // 1 hour
           });
         res.status(200).json({ message: 'Authentication successful'});
@@ -56,7 +62,19 @@ const login = async (req,res)=>{
         res.status(500).json({ message: 'Internal server error' });
     }
 }
+const profile = async (req,res) =>{
+    try {
+        const user = await User.findById(req.id).select('-password');
+        if(!user){
+            return res.status(404).json({message : 'User not found'});
+        }
+        res.status(200).json(user);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}
 
 module.exports = {
-    signup,login
+    signup,login,profile
 }

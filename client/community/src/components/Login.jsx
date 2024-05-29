@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react'
 import axios from 'axios'
 import {Link} from 'react-router-dom'
 import Cookies from 'js-cookie'
-import { userContext } from '../../context/UserContext';
+import { UserContext } from '../../context/UserContext';
 import { useNavigate } from 'react-router-dom';
 
 function Login() {
@@ -10,7 +10,7 @@ function Login() {
      empCode : '',
      password : ''
   });
-  const {setUser} = useContext(userContext);
+  const {setUser} = useContext(UserContext);
   const navigate = useNavigate();
 
   const [message,setMessage] = useState('');
@@ -41,7 +41,7 @@ function Login() {
         const response = await axios.post('http://localhost:3000/user/login',data,{ withCredentials: true });
         if(response.status == 200){
            setUser(loginForm.empCode);
-            navigate('profile');
+            navigate('/');
         }
        //Cookies.set('jwt_token',response.data.token);
         setMessage('Login successful. ')

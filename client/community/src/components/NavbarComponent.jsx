@@ -7,11 +7,11 @@ import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import Offcanvas from 'react-bootstrap/Offcanvas';
 import {Link} from 'react-router-dom'
-import { userContext } from '../../context/UserContext';
-function OffcanvasExample() {
+import { UserContext } from '../../context/UserContext';
+function NavbarComponent() {
     const expand = 'lg';
-    const {user} = useContext(userContext);
-   console.log(user)
+    const {user} = useContext(UserContext);
+    console.log(user)
   return (
     <>
       
@@ -33,11 +33,11 @@ function OffcanvasExample() {
                 <Nav className="justify-content-end flex-grow-1 pe-3">
                     
                     
-                    {/* {
+                    {
                       user ? (
-                        <Nav.Link as={Link} to={'profile'}>Profile</Nav.Link>
+                        <Nav.Link as={Link} to={'profile'}>{user}</Nav.Link>
                       ) : (<Nav.Link as={Link} to={'login'}>Login</Nav.Link>)
-                    } */}
+                    } 
                 </Nav>
                 {/* user information */}
               </Offcanvas.Body>
@@ -49,4 +49,4 @@ function OffcanvasExample() {
   );
 }
 
-export default OffcanvasExample;
+export default NavbarComponent;
